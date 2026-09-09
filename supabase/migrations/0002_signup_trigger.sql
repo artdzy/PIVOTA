@@ -1,0 +1,24 @@
+-- Yeni auth.users kaydı oluştuğunda (email/şifre kaydı veya Google/LinkedIn SSO ile ilk giriş)
+-- otomatik olarak public.profiles satırı oluşturur, rol varsayılan olarak 'aday' atanır.
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, username, full_name, role)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'username', new.email),
+    coalesce(new.raw_user_meta_data->>'full_name', new.email),
+    'aday'
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
