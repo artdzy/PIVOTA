@@ -79,6 +79,7 @@ export function Board({ initialApplications }: { initialApplications: KanbanAppl
   return (
     <>
       <DndContext
+        id="pivota-kanban"
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragStart={(e) => setActiveId(e.active.id as string)}

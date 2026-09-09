@@ -25,7 +25,8 @@ export async function extractResumeText(
       return value;
     }
     return null;
-  } catch {
+  } catch (err) {
+    console.error("extractResumeText failed:", err);
     return null;
   }
 }
